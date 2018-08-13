@@ -7,6 +7,14 @@ import matplotlib.pyplot as plt
 class SpaceTime(object):
     edges = attr.ib(factory=list)
 
+    def all_stations():
+        stations = set()
+        for e in self.edges:
+            stations.add(e.s1)
+            stations.add(e.s2)
+        return stations
+
+
     def draw_graph(self):
         G=nx.Graph()
         for e in self.edges:

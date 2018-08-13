@@ -4,9 +4,12 @@ import pdb
 
 @attr.s(hash=False)
 class Station(object):
-    rx = attr.ib(factory=list)
+    name = attr.ib()
+    tx_action = attr.ib(default='')
+    rx = attr.ib(default=[])
+    is_tx_station = attr.ib(default=False)
     time = attr.ib(default=0)
-    name = attr.ib(factory=str)
+
 
     def recieve(self, m):
         rx.append((self.time, rx))
@@ -16,6 +19,9 @@ class Station(object):
         print("station: " + self.name)
         print("rx stack: ")
         pprint(self.rx)
+
+    def should_tx():
+        return True
 
     def __eq__(self, other):
         return hash(self) == hash(other)
