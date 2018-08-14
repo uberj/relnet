@@ -3,15 +3,51 @@ from station import Station
 from spacetime import SpaceTime
 from edge import Edge
 
-def world_loop(spacetime):
-    for station in spacetime.all_stations():
+def world_loop(spacetime, duration_clicks=20):
+    # Inboxes are magic. They recieve a wave and delay the wave for delivary
+    # until the distance the wave has traveled makes sense. An inbox
+    # knows the source coordinate and the destination coordinate and will delay
+    # delivery relative to the distance between the two coordinates.
+    inboxes = make_inboxes(spacetime, spacetime.all_stations())
+    for t in range(duration_clicks):
         waves = []
-        station.observe()
-        station.orient()
-        station.decide()
-        signals = station.act(spacetime)
-        waves.extend(signals)
+        for station in spacetime.all_stations():
+            messages = inboxes.get(station.name).get_arrived_messages()
 
+            # Inputs are recieved during observe
+            station.observe(messages)
+
+            # Past time clicks are accounted for during orient
+            station.orient()
+
+            # Hypothesis
+            station.decide()
+
+            # Test
+            message = station.act(spacetime)
+
+            # Later, the world may deliver these messages
+            waves.append((station, message))
+
+        # The world delivers a station's message to all other stations
+        for station, message in waves:
+            for other_station in spacetime.all_stations():
+                if station is other_station:
+                    continue
+
+                if not spacetime.can_receive(station, other_station):
+                    continue
+
+                # We calculate the time delay for delivery. The inbox will
+                # delay delivery for that many time clicks.
+                tdelay = spacetime.time_between(station, other_station)
+                inboxes.get(other_station.name).deliver((t, message))
+
+        for inbox in inboxes:
+            inblox.advance_time()
+
+        for station in spacetime.all_stations():
+            station.advance_time()
 
 if __name__ == "__main__":
     i = Station(
