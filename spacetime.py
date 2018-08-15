@@ -7,13 +7,23 @@ import matplotlib.pyplot as plt
 class SpaceTime(object):
     edges = attr.ib(factory=list)
 
-    def all_stations():
+    def can_receive(self, station1, station2):
+        return True
+
+    def time_between(self, station1, station2):
+        for e in self.edges:
+            if e.s1 is station1 and e.s2 is station2:
+                return e.time_between
+            if e.s2 is station1 and e.s1 is station2:
+                return e.time_between
+        return -1
+
+    def all_stations(self):
         stations = set()
         for e in self.edges:
             stations.add(e.s1)
             stations.add(e.s2)
         return stations
-
 
     def draw_graph(self):
         G=nx.Graph()

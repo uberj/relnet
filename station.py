@@ -11,14 +11,23 @@ class Station(object):
     time = attr.ib(default=0)
 
 
-    def recieve(self, m):
-        rx.append((self.time, rx))
+    def observe(self, messages):
+        # Listen to messages and store them well so we can make decisions about
+        # them
+        messages
+        pass
 
-    def tick(self):
-        self.time += 1
-        print("station: " + self.name)
-        print("rx stack: ")
-        pprint(self.rx)
+    def orient(self, orient):
+        []
+
+    def decide(self, orient):
+        {}
+
+    def act(self, orient):
+        []
+
+    def advance_time(self, amount):
+        self.time += amount
 
     def should_tx():
         return True

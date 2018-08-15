@@ -2,32 +2,48 @@ import attr
 from station import Station 
 from spacetime import SpaceTime
 from edge import Edge
+from delayed_inbox import DelayedInbox
 
-def world_loop(spacetime, duration_clicks=20):
+
+def world_loop(spacetime, duration_clicks=5):
     # Inboxes are magic. They recieve a wave and delay the wave for delivary
     # until the distance the wave has traveled makes sense. An inbox
     # knows the source coordinate and the destination coordinate and will delay
     # delivery relative to the distance between the two coordinates.
-    inboxes = make_inboxes(spacetime, spacetime.all_stations())
+    inboxes = {}
+    for station in spacetime.all_stations():
+        inboxes[station.name] = DelayedInbox(station)
+
+    logs = []
     for t in range(duration_clicks):
         waves = []
+        log = {}
+        logs.append(log)
         for station in spacetime.all_stations():
+            log['time'] = t
+            log['station'] = station
             messages = inboxes.get(station.name).get_arrived_messages()
 
             # Inputs are recieved during observe
             station.observe(messages)
+            log['rx'] = messages
 
             # Past time clicks are accounted for during orient
-            station.orient()
+            what_happened = station.orient()
+            log['orient'] = what_happened
 
             # Hypothesis
-            station.decide()
+            decision = station.decide()
+            log['decide'] = decision
 
             # Test
             message = station.act(spacetime)
+            log['message'] = message
 
             # Later, the world may deliver these messages
             waves.append((station, message))
+
+        pprint(log)
 
         # The world delivers a station's message to all other stations
         for station, message in waves:
@@ -40,14 +56,16 @@ def world_loop(spacetime, duration_clicks=20):
 
                 # We calculate the time delay for delivery. The inbox will
                 # delay delivery for that many time clicks.
-                tdelay = spacetime.time_between(station, other_station)
-                inboxes.get(other_station.name).deliver((t, message))
+                time_delay = spacetime.time_between(station, other_station)
+                inboxes.get(other_station.name).deliver(t, time_delay, message)
 
         for inbox in inboxes:
-            inblox.advance_time()
+            inblox.advance_time(1)
 
         for station in spacetime.all_stations():
-            station.advance_time()
+            station.advance_time(1)
+
+        print("\n")
 
 if __name__ == "__main__":
     i = Station(
@@ -76,4 +94,5 @@ if __name__ == "__main__":
         Edge(s1=c, s2=d, time_between=1)
     ])
 
-    st.draw_graph()
+    #st.draw_graph()
+    world_loop(st)
