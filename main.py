@@ -67,13 +67,13 @@ def world_loop(spacetime, duration_clicks=5):
 
         print("\n")
 
+
 if __name__ == "__main__":
     i = Station(
             time = 0, name="i",
-            is_tx_station=True,
-            rx=False
+            is_tx_station=True
     )
-    j = Station(time = 0, name="j", is_tx_station=True, rx=False)
+    j = Station(time = 0, name="j", is_tx_station=True)
     d = Station(
             time = 0,
             name="d",
