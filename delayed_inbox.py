@@ -1,6 +1,6 @@
 import attr
 from typing import List, Tuple
-from types import Message
+from t import Message
 from station import Station
 
 
